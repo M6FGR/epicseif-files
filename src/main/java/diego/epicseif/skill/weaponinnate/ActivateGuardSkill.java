@@ -40,7 +40,7 @@ import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
 
 public class ActivateGuardSkill extends WeaponInnateSkill {
-    private static final UUID EVENT_UUID = UUID.fromString("244c57c0-a837-11eb-bcbc-0242ac130002");
+    private static final UUID EVENT_UUID = UUID.fromString("b422f7a0-f378-11eb-9a03-0242ac703459");
     private int returnDuration;
 
     public ActivateGuardSkill(Builder<? extends Skill> builder) {
