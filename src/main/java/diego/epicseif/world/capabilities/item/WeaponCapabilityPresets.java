@@ -39,17 +39,29 @@ public class WeaponCapabilityPresets {
         event.getTypeEntry().put(new ResourceLocation(SeifForEpicFight.MOD_ID,"seif"), SEIF);
     }
 
-    private static CapabilityItem.Builder apply(Item item) {
-        WeaponCapability.Builder builder = WeaponCapability.builder()
-                .styleProvider((playerpatch) -> Styles.ONE_HAND)
-                .category(CapabilityItem.WeaponCategories.TACHI)
-                .collider(SeifColliderPreset.SEIF)
-                .swingSound(EpicFightSounds.WHOOSH.get())
-                .hitSound(EpicFightSounds.BLUNT_HIT.get())
-                .canBePlacedOffhand(true)
-                .newStyleCombo(Styles.ONE_HAND, SeifAnimations.SEIF_AUTO1, SeifAnimations.SEIF_AUTO2, SeifAnimations.SEIF_AUTO3, SeifAnimations.SEIF_DASH, SeifAnimations.SEIF_AIRSLASH)
-                .newStyleCombo(Styles.TWO_HAND, SeifAnimations.SEIF_INNER1, SeifAnimations.SEIF_INNER2, SeifAnimations.SEIF_INNER3, SeifAnimations.SEIF_INNER_DASH, SeifAnimations.SEIF_INNER_AIRSLASH)
-                .innateSkill(Styles.TWO_HAND, (itemstack) -> SeifSkills.ACTIVATEGUARD)
+   private static final Function<Item, CapabilityItem.Builder> SEIF = (item) -> {
+return WeaponCapability.builder().category(WeaponCategories.LONGSWORD).styleProvider((playerpatch) -> {
+            if (playerpatch.getHoldingItemCapability(InteractionHand.OFF_HAND).getWeaponCategory() == WeaponCategories.SHIELD) {
+                return Styles.ONE_HAND;
+            } else if (playerpatch instanceof PlayerPatch) {
+                PlayerPatch<?> tplayerpatch = (PlayerPatch)playerpatch;
+                return tplayerpatch.getSkill(SkillSlots.WEAPON_INNATE).isActivated() ? Styles.OCHS : Styles.TWO_HAND;
+            } else {
+                return Styles.TWO_HAND;
+            }
+        })
+.collider(SeifColliderPreset.SEIF)
+.hitSound(EpicFightSounds.BLUNT_HIT.get())
+.canBePlacedOffhand(false)
+.newStyleCombo(Styles.ONE_HAND, new StaticAnimation[]{SeifAnimations.SEIF_AUTO1, SeifAnimations.SEIF_AUTO2, SeifAnimations.SEIF_AUTO3, SeifAnimations.SEIF_DASH, SeifAnimations.SEIF_AIRSLASH})
+.newStyleCombo(Styles.TWO_HAND, new StaticAnimation[]{SeifAnimations.SEIF_INNER1, SeifAnimations.SEIF_INNER2, SeifAnimations.SEIF_INNER3, SeifAnimations.SEIF_INNER_DASH, SeifAnimations.SEIF_INNER_AIRSLASH})
+.newStyleCombo(Styles.OCHS, new StaticAnimation[]{SeifAnimations.SEIF_INNER1, SeifAnimations.SEIF_INNER2, SeifAnimations.SEIF_INNER3, SeifAnimations.SEIF_INNER_DASH, SeifAnimations.SEIF_INNER_AIRSLASH})
+        .innateSkill(Styles.ONE_HAND, (itemstack) -> {
+            return EpicFightSkills.SHARP_STAB;
+        }).innateSkill(Styles.TWO_HAND, (itemstack) -> {
+            return SeifSkills.ACTIVATEGUARD;
+        }).innateSkill(Styles.OCHS, (itemstack) -> {
+            return SeifSkills.ACTIVATEGUARD;
                 .livingMotionModifier(Styles.ONE_HAND, LivingMotions.IDLE, SeifAnimations.BIPED_SEIF_IDLE)
                 .livingMotionModifier(Styles.ONE_HAND, LivingMotions.WALK, SeifAnimations.BIPED_SEIF_WALK)
                 .livingMotionModifier(Styles.ONE_HAND, LivingMotions.CHASE, SeifAnimations.BIPED_SEIF_WALK)
@@ -59,7 +71,4 @@ public class WeaponCapabilityPresets {
                 .livingMotionModifier(Styles.ONE_HAND, LivingMotions.SNEAK, SeifAnimations.BIPED_SEIF_WALK)
                 .livingMotionModifier(Styles.ONE_HAND, LivingMotions.SWIM, SeifAnimations.BIPED_SEIF_WALK)
                 .livingMotionModifier(Styles.ONE_HAND, LivingMotions.BLOCK, SeifAnimations.SEIF_GUARD);
-
-        return builder;
-    }
-}
+    };
